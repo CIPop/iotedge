@@ -28,10 +28,11 @@
     <PackageReference Include="Microsoft.AspNetCore.Http.Features" Version="2.1.1" />
     <PackageReference Include="Microsoft.AspNetCore.Mvc" Version="2.1.1" />
     <PackageReference Include="Microsoft.AspNetCore.WebSockets" Version="2.1.1" />
-    <PackageReference Include="Microsoft.Azure.Devices" Version="1.17.1" />
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\..\..\..\azure-iot-sdk-csharp\iothub\service\src\Microsoft.Azure.Devices.csproj" />
+    <ProjectReference Include="..\..\..\..\azure-iot-sdk-csharp\shared\src\Microsoft.Azure.Devices.Shared.csproj" />
     <ProjectReference Include="..\..\..\edge-util\src\Microsoft.Azure.Devices.Edge.Util\Microsoft.Azure.Devices.Edge.Util.csproj" />
     <ProjectReference Include="..\Microsoft.Azure.Devices.Edge.Hub.Core\Microsoft.Azure.Devices.Edge.Hub.Core.csproj" />
   </ItemGroup>

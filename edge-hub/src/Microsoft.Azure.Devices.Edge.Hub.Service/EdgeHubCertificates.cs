@@ -82,7 +82,7 @@ namespace Microsoft.Azure.Devices.Edge.Hub.Service
                 // If no connection string was set and we use iotedge devdiv style certificates for development
                 List<X509Certificate2> certificateChain = CertificateHelper.GetServerCACertificatesFromFile(edgeHubDockerCaChainCertPath)?.ToList();
                 InstallCertificates(certificateChain);
-                result = new EdgeHubCertificates(new X509Certificate2(edgeHubDockerCertPFXPath), certificateChain, new List<X509Certificate2>());
+                result = new EdgeHubCertificates(new X509Certificate2(edgeHubDockerCertPFXPath, "testcertificate"), certificateChain, new List<X509Certificate2>());
             }
             else
             {
