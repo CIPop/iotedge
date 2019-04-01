@@ -24,11 +24,11 @@ namespace Microsoft.Azure.Devices.Edge.Hub.Service
     public class Program
     {
         static readonly TimeSpan ShutdownWaitPeriod = TimeSpan.FromSeconds(20);
-        static ConsoleEventListener _listener;
+        static ConsoleEventListener azureSdkLogListener;
 
         public static int Main()
         {
-            Console.WriteLine($"{DateTime.UtcNow.ToLogString()} Edge Hub Main()");
+            Console.WriteLine($"{DateTime.UtcNow.ToLogString()} Edge Hub Main() v_noreceivelink");
 
             IConfigurationRoot configuration = new ConfigurationBuilder()
                 .AddJsonFile(Constants.ConfigFileName)
@@ -52,7 +52,7 @@ namespace Microsoft.Azure.Devices.Edge.Hub.Service
             if (configuration.GetValue("EnableAzureSDKLogging", false))
             {
                 Console.WriteLine($"{DateTime.UtcNow.ToLogString()} Enabled Azure SDK {nameof(ConsoleEventListener)}");
-                Program._listener = new ConsoleEventListener("Microsoft-Azure-");
+                Program.azureSdkLogListener = new ConsoleEventListener("Microsoft-Azure-");
             }
 
             EdgeHubCertificates certificates = await EdgeHubCertificates.LoadAsync(configuration);
