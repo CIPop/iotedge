@@ -106,7 +106,11 @@ namespace TemperatureFilter
                         filteredMessage.Properties.Add(prop.Key, prop.Value);
                     }
 
-                    filteredMessage.Properties.Add("MessageType", "Alert");
+                    if (!filteredMessage.Properties.TryAdd("MessageType", "Alert"))
+                    {
+                        Logger.LogWarning($"Message already has MessageType = [{filteredMessage.Properties["MessageType"]}]");
+                    }
+
                     await moduleClient.SendEventAsync("alertOutput", filteredMessage);
                 }
             }

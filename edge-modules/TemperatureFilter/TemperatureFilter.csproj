@@ -33,7 +33,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="Microsoft.Azure.Devices.Client" Version="1.18.1" />
     <PackageReference Include="Microsoft.Extensions.Configuration" Version="2.2.0" />
     <PackageReference Include="Microsoft.Extensions.Configuration.Binder" Version="2.2.0" />
     <PackageReference Include="Microsoft.Extensions.Configuration.EnvironmentVariables" Version="2.2.0" />
@@ -42,6 +41,8 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\..\..\azure-iot-sdk-csharp\iothub\device\src\Microsoft.Azure.Devices.Client.csproj" />
+    <ProjectReference Include="..\..\..\azure-iot-sdk-csharp\shared\src\Microsoft.Azure.Devices.Shared.csproj" />
     <ProjectReference Include="..\..\edge-util\src\Microsoft.Azure.Devices.Edge.Util\Microsoft.Azure.Devices.Edge.Util.csproj" />
     <ProjectReference Include="..\ModuleLib\Microsoft.Azure.Devices.Edge.ModuleUtil.csproj" />
   </ItemGroup>

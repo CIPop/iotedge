@@ -28,7 +28,7 @@ namespace Microsoft.Azure.Devices.Edge.Hub.Service
 
         public static int Main()
         {
-            Console.WriteLine($"{DateTime.UtcNow.ToLogString()} Edge Hub Main() v_noreceivelink");
+            Console.WriteLine($"{DateTime.UtcNow.ToLogString()} Edge Hub Main() amqp_preview_RC1");
 
             IConfigurationRoot configuration = new ConfigurationBuilder()
                 .AddJsonFile(Constants.ConfigFileName)

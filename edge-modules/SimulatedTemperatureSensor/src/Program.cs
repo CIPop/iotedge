@@ -27,6 +27,7 @@ namespace SimulatedTemperatureSensor
         static readonly Random Rnd = new Random();
         static TimeSpan messageDelay;
         static bool sendData = true;
+        static TaskCompletionSource<bool> resetTaskCompletionSource = new TaskCompletionSource<bool>();
 
         public enum ControlCommandEnum
         {
@@ -63,7 +64,7 @@ namespace SimulatedTemperatureSensor
                 + $"messages, at an interval of {messageDelay.TotalSeconds} seconds.\n"
                 + $"To change this, set the environment variable {MessageCountConfigKey} to the number of messages that should be sent (set it to -1 to send unlimited messages).");
 
-            TransportType transportType = configuration.GetValue("ClientTransportType", TransportType.Mqtt_Tcp_Only);
+            TransportType transportType = configuration.GetValue("ClientTransportType", TransportType.Amqp_Tcp_Only);
 
             ModuleClient moduleClient = await ModuleUtil.CreateModuleClientAsync(
                 transportType,
@@ -71,7 +72,6 @@ namespace SimulatedTemperatureSensor
                 ModuleUtil.DefaultTransientRetryStrategy);
             await moduleClient.OpenAsync();
             await moduleClient.SetMethodHandlerAsync("reset", ResetMethod, null);
-
 
             (CancellationTokenSource cts, ManualResetEventSlim completed, Option<object> handler) = ShutdownHandler.Init(TimeSpan.FromSeconds(5), null);
 
@@ -93,10 +93,25 @@ namespace SimulatedTemperatureSensor
             ModuleClient userContext = moduleClient;
             await moduleClient.SetDesiredPropertyUpdateCallbackAsync(OnDesiredPropertiesUpdated, userContext);
             await moduleClient.SetInputMessageHandlerAsync("control", ControlMessageHandle, userContext);
-            await SendEvents(moduleClient, messageCount, simulatorParameters, cts);
-            await cts.Token.WhenCanceled();
 
-            completed.Set();
+            do
+            {
+                await SendEvents(moduleClient, messageCount, simulatorParameters, cts);
+                Task resetCalledTask = resetTaskCompletionSource.Task;
+                Task cancelledTask = cts.Token.WhenCanceled();
+                Task completedTask = await Task.WhenAny(resetCalledTask, cancelledTask);
+
+                if (completedTask == cancelledTask)
+                {
+                    completed.Set();
+                }
+                else
+                {
+                    resetTaskCompletionSource = new TaskCompletionSource<bool>();
+                }
+            }
+            while (!completed.IsSet);
+
             handler.ForEach(h => GC.KeepAlive(h));
             Console.WriteLine("SimulatedTemperatureSensor Main() finished.");
             return 0;
@@ -151,6 +166,8 @@ namespace SimulatedTemperatureSensor
             Console.WriteLine("Received direct method call to reset temperature sensor...");
             Reset.Set(true);
             var response = new MethodResponse((int)HttpStatusCode.OK);
+
+            resetTaskCompletionSource.TrySetResult(true);
             return Task.FromResult(response);
         }
 
